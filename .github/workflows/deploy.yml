@@ -27,7 +27,7 @@ jobs:
     - name: Deploy to VM
       env:
         ZONE: "us-central1-a"
-        INSTANCE_NAME: "erpnext-server"
+        INSTANCE_NAME: "instance-20260201-203958"
       run: |
         # Ensure the VM is running
         echo "Checking VM status..."
