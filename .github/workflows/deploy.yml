@@ -1,0 +1,90 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Google Auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Deploy to VM
+      env:
+        ZONE: "us-central1-a"
+        INSTANCE_NAME: "erpnext-server"
+      run: |
+        # Ensure the VM is running
+        echo "Checking VM status..."
+        gcloud compute instances start $INSTANCE_NAME --zone=$ZONE || true
+        
+        # Wait for SSH to be ready
+        echo "Waiting for VM to be ready..."
+        sleep 30
+        
+        # Create a tarball of the current directory
+        # Exclude .git and other unnecessary files
+        echo "Preparing files..."
+        tar -czf deploy.tar.gz --exclude='.git' --exclude='node_modules' .
+        
+        # Upload tarball
+        echo "Uploading files..."
+        gcloud compute scp deploy.tar.gz $INSTANCE_NAME:~/deploy.tar.gz --zone=$ZONE
+        
+        # SSH and deploy
+        echo "Executing deployment on VM..."
+        gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --command="
+          # Create deployment directory
+          mkdir -p ~/erpnext-deploy
+          
+          # Extract files
+          tar -xzf ~/deploy.tar.gz -C ~/erpnext-deploy
+          
+          # Go to deployment directory
+          cd ~/erpnext-deploy
+          
+          # Start/Restart containers
+          # We use the pwd.yml from frappe_docker directory
+          echo 'Starting containers...'
+          sudo docker compose -f frappe_docker/pwd.yml up -d --build
+          
+          # Wait for backend to be ready
+          echo 'Waiting for backend...'
+          sleep 60
+          
+          # Apply API changes
+          # We assume 'api' folder needs to be injected into the backend container
+          # We'll try to copy it to the frappe app or erpnext app depending on structure
+          # For now, let's copy it to /home/frappe/frappe-bench/apps/frappe/frappe/api 
+          # (or wherever it fits, this might need adjustment based on actual app structure)
+          
+          CONTAINER_ID=\$(sudo docker compose -f frappe_docker/pwd.yml ps -q backend)
+          if [ -n \"\$CONTAINER_ID\" ]; then
+              echo 'Injecting API files...'
+              # Copy api folder to container
+              sudo docker cp api \$CONTAINER_ID:/home/frappe/frappe-bench/apps/frappe/frappe/
+              
+              # Restart backend to pick up python changes
+              sudo docker compose -f frappe_docker/pwd.yml restart backend
+              
+              echo 'Deployment finished successfully!'
+          else
+              echo 'Error: Backend container not found!'
+              exit 1
+          fi
+        "
