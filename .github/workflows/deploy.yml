@@ -29,6 +29,11 @@ jobs:
         ZONE: "us-central1-a"
         INSTANCE_NAME: "instance-20260201-203958"
       run: |
+        # Debug info
+        echo "Debug: Checking configuration..."
+        gcloud config list
+        gcloud compute instances list
+        
         # Ensure the VM is running
         echo "Checking VM status..."
         gcloud compute instances start $INSTANCE_NAME --zone=$ZONE || true
@@ -40,7 +45,7 @@ jobs:
         # Create a tarball of the current directory
         # Exclude .git and other unnecessary files
         echo "Preparing files..."
-        tar -czf deploy.tar.gz --exclude='.git' --exclude='node_modules' .
+        tar -czf deploy.tar.gz --exclude='.git' --exclude='node_modules' --exclude='deploy.tar.gz' .
         
         # Upload tarball
         echo "Uploading files..."
