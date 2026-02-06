@@ -5,8 +5,16 @@ from frappe.core.api.file import get_max_file_size
 from frappe.translate import get_all_translations
 from frappe.utils import cstr, split_emails, validate_email_address
 from frappe.utils.telemetry import POSTHOG_HOST_FIELD, POSTHOG_PROJECT_FIELD
+from semantic_version import Version
 
-from crm.utils import is_frappe_version
+
+def is_frappe_version(version, above=False):
+	frappe_version = Version(frappe.__version__)
+	target_version = Version(version)
+	
+	if above:
+		return frappe_version >= target_version
+	return frappe_version.major == target_version.major
 
 
 @frappe.whitelist(allow_guest=True)
