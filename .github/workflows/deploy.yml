@@ -45,11 +45,11 @@ jobs:
         # Create a tarball of the current directory
         # Exclude .git and other unnecessary files
         echo "Preparing files..."
-        tar -czf deploy.tar.gz --exclude='.git' --exclude='node_modules' --exclude='deploy.tar.gz' .
+        tar -czf /tmp/deploy.tar.gz --exclude='.git' --exclude='node_modules' .
         
         # Upload tarball
         echo "Uploading files..."
-        gcloud compute scp deploy.tar.gz $INSTANCE_NAME:~/deploy.tar.gz --zone=$ZONE
+        gcloud compute scp /tmp/deploy.tar.gz $INSTANCE_NAME:~/deploy.tar.gz --zone=$ZONE
         
         # SSH and deploy
         echo "Executing deployment on VM..."
