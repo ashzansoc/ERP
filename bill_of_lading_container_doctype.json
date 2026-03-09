@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "creation": "2026-02-20 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "container_number",
+  "container_type",
+  "seal_number",
+  "column_break_1",
+  "packages",
+  "weight",
+  "volume"
+ ],
+ "fields": [
+  {
+   "fieldname": "container_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Container Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "container_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Container Type",
+   "options": "20' Standard\n40' Standard\n40' High Cube\n45' High Cube\n20' Refrigerated\n40' Refrigerated\n20' Open Top\n40' Open Top\n20' Flat Rack\n40' Flat Rack"
+  },
+  {
+   "fieldname": "seal_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Seal Number"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "packages",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Number of Packages"
+  },
+  {
+   "fieldname": "weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Weight (KG)"
+  },
+  {
+   "fieldname": "volume",
+   "fieldtype": "Float",
+   "label": "Volume (CBM)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-20 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Stock",
+ "name": "Bill of Lading Container",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

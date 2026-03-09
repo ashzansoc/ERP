@@ -19,7 +19,7 @@ if ! command -v gcloud &> /dev/null; then
     echo "❌ gcloud CLI not found. Please install Google Cloud SDK first."
     exit 1
 fi
-
+98
 # Set project
 echo "📋 Setting project to $PROJECT_ID..."
 gcloud config set project $PROJECT_ID
